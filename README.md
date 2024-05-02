@@ -7,7 +7,7 @@ Langkah-langkah untuk setup `reels-reuploader` adalah sebagai berikut:
    - Rust
    - FFmpeg
    - yt-dlp (dapat diinstal dengan perintah `pip install yt-dlp`)
-   - chromedriver terbaru [download disini](https://chromedriver.chromium.org/downloads)
+   - Chrome / Chromium
 
 2. Buat bot Telegram dan ambil token bot tersebut. Kamu dapat mengikuti langkah-langkah di [sini](https://core.telegram.org/bots/tutorial#obtain-your-bot-token) untuk memperoleh token bot Telegram.
 
