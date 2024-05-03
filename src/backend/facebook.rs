@@ -1,4 +1,4 @@
-use std::{ffi::OsStr, fs, process::exit, thread::sleep, time::Duration};
+use std::{ffi::OsStr, fs, thread::sleep, time::Duration};
 
 use headless_chrome::{protocol::cdp::Network::CookieParam, Browser, LaunchOptionsBuilder};
 use teloxide::Bot;
@@ -6,7 +6,11 @@ use tokio::time::Instant;
 
 use crate::{config::Config, message::MessageEdit, telegram::Data};
 
-pub async fn post_reels(bot: &Bot, config: Config, data: &mut Data) -> anyhow::Result<()> {
+pub async fn post_to_facebook_reels(
+    bot: &Bot,
+    config: Config,
+    data: &mut Data,
+) -> anyhow::Result<()> {
     // let id = data.message.clone().unwrap().chat.id;
     let description = data.description.clone();
     let output = fs::canonicalize(data.output.clone())?;
@@ -32,22 +36,18 @@ pub async fn post_reels(bot: &Bot, config: Config, data: &mut Data) -> anyhow::R
     tab.set_cookies(cookies)?;
 
     bot_msg.add("• Membuka halaman reels").await?;
-    tab.navigate_to("https://www.facebook.com/reels/create")?
-        .wait_until_navigated()?;
+    tab.navigate_to("https://www.facebook.com/reels/create")?;
+    bot_msg.timer(10).await?;
 
     bot_msg.add("• Mengunggah video").await?;
     let s = Instant::now();
     let element = tab.wait_for_xpath("//input[@class='x1s85apg']")?;
     element.set_input_files(&[&output.to_string_lossy()])?;
-    bot_msg.timer(2).await?;
 
     let mut prev = String::new();
     loop {
         if s.elapsed().as_secs() > 60 {
-            bot_msg
-                .add("```Error\nFile tidak dapat diunggah```")
-                .await?;
-            exit(0);
+            anyhow::bail!("```Error\nFile tidak dapat diunggah```");
         }
         let element = tab.find_element_by_xpath("//div[2]/div[1]/div[1]/span[1]")?;
         let text = element.get_inner_text()?;
@@ -60,6 +60,7 @@ pub async fn post_reels(bot: &Bot, config: Config, data: &mut Data) -> anyhow::R
         prev = text;
         sleep(Duration::from_secs(1));
     }
+    bot_msg.timer(2).await?;
 
     bot_msg.add("• Menyiapkan reels").await?;
     let button = tab.wait_for_xpath("//div[3]/div[2]/div[1]/div[1]/div[1]/div[1]")?;
