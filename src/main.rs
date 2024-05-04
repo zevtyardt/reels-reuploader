@@ -10,7 +10,6 @@ mod backend;
 mod config;
 mod error;
 mod message;
-mod reels;
 mod telegram;
 
 fn main() -> anyhow::Result<()> {
