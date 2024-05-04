@@ -9,9 +9,8 @@ use teloxide::{
 use url::Url;
 
 use crate::{
-    backend::YoutubeDlp,
+    backend::{downloader::YoutubeDlp, facebook::post_to_facebook_reels},
     config::Config,
-    reels::post_reels,
     telegram::{Data, MyDialogue, State},
 };
 
@@ -42,7 +41,7 @@ pub async fn callback_handler(
                     .await?;
                 return Ok(());
             }
-            if let Err(e) = post_reels(&bot, config, &mut data).await {
+            if let Err(e) = post_to_facebook_reels(&bot, config, &mut data).await {
                 data.text.push_str(format!("\n```Error\n{}```", e).as_str());
                 bot.edit_message_text(message.chat.id, message.id, data.text.clone())
                     .parse_mode(teloxide::types::ParseMode::MarkdownV2)
@@ -109,7 +108,7 @@ pub async fn edit_desc_handler(
     let bot_message = data.message.clone().unwrap();
     let mut spl = data.text.split("```");
 
-    data.description = message.text().unwrap().to_owned();
+    message.text().unwrap().clone_into(&mut data.description);
     data.text = format!(
         "{}```Deskripsi\n{}```• Berhasil mengganti",
         spl.next().unwrap_or(&data.text),

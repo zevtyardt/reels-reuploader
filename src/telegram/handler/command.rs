@@ -7,7 +7,7 @@ use teloxide::{
 };
 
 use crate::{
-    backend::YoutubeDlp,
+    backend::downloader::YoutubeDlp,
     config::Config,
     telegram::{Data, MyDialogue, State},
 };
