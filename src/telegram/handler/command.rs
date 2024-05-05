@@ -55,7 +55,7 @@ pub async fn command_handler(
                     .await?;
 
                 let mut button = vec![
-                    vec![InlineKeyboardButton::callback("Lanjutkan", "next")],
+                    vec![InlineKeyboardButton::callback("Lanjutkan", "next_download")],
                     vec![InlineKeyboardButton::callback("Batalkan", "cancel")],
                 ];
 
@@ -122,7 +122,7 @@ pub async fn command_handler(
                         dialogue.update(State::Confirm(data)).await?;
                     }
                     Err(e) => {
-                        text.push_str(format!("\n```Error\n{}```", e).as_str());
+                        text.push_str(format!("\n```Error\n{}```", e.to_string().trim()).as_str());
                         bot.edit_message_text(message.chat.id, msg.id, text)
                             .parse_mode(teloxide::types::ParseMode::MarkdownV2)
                             .await?;

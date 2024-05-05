@@ -33,14 +33,20 @@ pub async fn callback_handler(
             .await?;
 
             let _ = dialogue.update(State::EditDescription(data)).await;
-        } else if cb.data == Some("next".to_string()) {
-            if let Err(e) = download_video(&bot, &mut data).await {
-                data.text.push_str(format!("\n```Error\n{}```", e).as_str());
+        } else if cb.data == Some("next_download".to_string()) {
+            if let Err(e) = download_video(&bot, &mut data, config).await {
+                data.text
+                    .push_str(format!("\n```Error\n{}```", e.to_string().trim()).as_str());
                 bot.edit_message_text(message.chat.id, message.id, data.text.clone())
                     .parse_mode(teloxide::types::ParseMode::MarkdownV2)
                     .await?;
+                let _ = dialogue.update(State::Confirm(data)).await;
                 return Ok(());
             }
+        } else if cb.data == Some("post_instagram".to_string()) {
+            bot.send_message(message.chat.id, "⚠️ fitur masih dalam pembuatan")
+                .await?;
+        } else if cb.data == Some("post_facebook".to_string()) {
             if let Err(e) = post_to_facebook_reels(&bot, config, &mut data).await {
                 data.text.push_str(format!("\n```Error\n{}```", e).as_str());
                 bot.edit_message_text(message.chat.id, message.id, data.text.clone())
@@ -67,7 +73,7 @@ pub async fn callback_handler(
     Ok(())
 }
 
-pub async fn download_video(bot: &Bot, data: &mut Data) -> anyhow::Result<()> {
+pub async fn download_video(bot: &Bot, data: &mut Data, config: Config) -> anyhow::Result<()> {
     let message = data.message.clone().unwrap();
     data.text.push_str("\n• Mulai mengunduh video");
     bot.edit_message_text(message.chat.id, message.id, data.text.clone())
@@ -80,7 +86,7 @@ pub async fn download_video(bot: &Bot, data: &mut Data) -> anyhow::Result<()> {
         data.text.push_str("\n• Video sudah pernah diunduh");
     } else {
         let youtube_dl = YoutubeDlp::new(data.url.clone());
-        let dur = youtube_dl.download(data.output.clone())?;
+        let dur = youtube_dl.download(data.output.clone(), config.ytdlp.custom_args)?;
 
         if path.is_file() {
             data.text
@@ -91,10 +97,21 @@ pub async fn download_video(bot: &Bot, data: &mut Data) -> anyhow::Result<()> {
             anyhow::bail!("Proses pengunduhan gagal!");
         }
     }
-
-    bot.edit_message_text(message.chat.id, message.id, data.text.clone())
-        .parse_mode(teloxide::types::ParseMode::MarkdownV2)
-        .await?;
+    let button = vec![
+        vec![
+            InlineKeyboardButton::callback("Instagram", "post_instagram"),
+            InlineKeyboardButton::callback("Facebook", "post_facebook"),
+        ],
+        vec![InlineKeyboardButton::callback("Batalkan", "cancel")],
+    ];
+    bot.edit_message_text(
+        message.chat.id,
+        message.id,
+        format!("{}\n• Dimana kamu ingin mengunggahnya:", data.text),
+    )
+    .parse_mode(teloxide::types::ParseMode::MarkdownV2)
+    .reply_markup(InlineKeyboardMarkup::new(button))
+    .await?;
 
     Ok(())
 }
@@ -118,7 +135,7 @@ pub async fn edit_desc_handler(
     let button = vec![
         vec![
             InlineKeyboardButton::callback("Edit Deskripsi", "edit"),
-            InlineKeyboardButton::callback("Lanjutkan", "next"),
+            InlineKeyboardButton::callback("Lanjutkan", "next_download"),
         ],
         vec![InlineKeyboardButton::callback("Batalkan", "cancel")],
     ];
