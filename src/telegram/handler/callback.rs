@@ -40,9 +40,9 @@ pub async fn callback_handler(
                 bot.edit_message_text(message.chat.id, message.id, data.text.clone())
                     .parse_mode(teloxide::types::ParseMode::MarkdownV2)
                     .await?;
-                let _ = dialogue.update(State::Confirm(data)).await;
                 return Ok(());
             }
+            let _ = dialogue.update(State::Confirm(data)).await;
         } else if cb.data == Some("post_instagram".to_string()) {
             bot.send_message(message.chat.id, "⚠️ fitur masih dalam pembuatan")
                 .await?;
@@ -107,7 +107,7 @@ pub async fn download_video(bot: &Bot, data: &mut Data, config: Config) -> anyho
     bot.edit_message_text(
         message.chat.id,
         message.id,
-        format!("{}\n• Dimana kamu ingin mengunggahnya:", data.text),
+        format!("{}\n• Unggah ke:", data.text),
     )
     .parse_mode(teloxide::types::ParseMode::MarkdownV2)
     .reply_markup(InlineKeyboardMarkup::new(button))
