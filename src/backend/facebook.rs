@@ -71,13 +71,15 @@ pub async fn post_to_facebook_reels(
     button.click()?;
     bot_msg.timer(2).await?;
 
-    bot_msg
-        .add("• Menambahkan caption sesuai deskripsi")
-        .await?;
-    let input = tab.wait_for_element(".x1xb5f1y")?;
-    input.click()?;
-    tab.type_str(&description)?;
-    bot_msg.timer(2).await?;
+    if !description.is_empty() {
+        bot_msg
+            .add("• Menambahkan caption sesuai deskripsi")
+            .await?;
+        let input = tab.wait_for_element(".x1xb5f1y")?;
+        input.click()?;
+        tab.type_str(&description)?;
+        bot_msg.timer(2).await?;
+    }
 
     bot_msg.add("• Sebentar lagi").await?;
     let publish =
@@ -86,8 +88,8 @@ pub async fn post_to_facebook_reels(
     bot_msg.timer(20).await?;
 
     bot_msg.add("• Mengambil tautan reels").await?;
-    tab.navigate_to("https://www.facebook.com/me/reels")?
-        .wait_until_navigated()?;
+    tab.navigate_to("https://www.facebook.com/me/reels")?;
+    bot_msg.timer(10).await?;
 
     if let Ok(elem) = tab.wait_for_xpath("//a[.='0']") {
         let url = if let Some(url) = elem.get_attribute_value("href")? {

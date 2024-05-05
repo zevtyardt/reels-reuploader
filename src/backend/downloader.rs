@@ -49,12 +49,11 @@ impl YoutubeDlp {
             if s.is_empty() {
                 s.push_str("Internal server error")
             }
-
             anyhow::bail!(s);
         }
     }
 
-    pub fn download(&self, output: String) -> anyhow::Result<Duration> {
+    pub fn download(&self, output: String, custom_args: Vec<String>) -> anyhow::Result<Duration> {
         let s = Instant::now();
         let binary_path = which("yt-dlp")?;
         let mut cmd = Command::new(binary_path);
@@ -64,16 +63,29 @@ impl YoutubeDlp {
             .stderr(Stdio::piped());
         cmd.args([
             self.url.clone(),
-            "-S".to_string(),
-            "ext".to_string(),
             "--continue".to_string(),
             "--no-warning".to_string(),
             "--output".to_string(),
             output,
         ]);
 
+        if which("ffmpeg").is_ok() {
+            cmd.args(["-S".to_string(), "ext".to_string()]);
+        }
+
+        if !custom_args.is_empty() {
+            for arg in custom_args {
+                cmd.arg(arg);
+            }
+        }
+
         let child = cmd.spawn()?;
-        child.wait_with_output()?;
+        let output = child.wait_with_output()?;
+        if !output.stderr.is_empty() {
+            let stderr = output.stderr.to_vec();
+            let err = String::from_utf8_lossy(&stderr).to_string();
+            anyhow::bail!(err);
+        }
         Ok(s.elapsed())
     }
 }
