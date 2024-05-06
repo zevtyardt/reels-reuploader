@@ -5,7 +5,7 @@ Langkah-langkah untuk setup `reels-reuploader` adalah sebagai berikut:
 1. Install dependensi yang diperlukan, yaitu:
    - Python
    - Rust
-   - FFmpeg
+   - FFmpeg `opsional`
    - yt-dlp (dapat diinstal dengan perintah `pip install yt-dlp`)
    - Chrome / Chromium
 
