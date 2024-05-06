@@ -9,6 +9,7 @@
 # changelog header
 header = """
 # Changelog
+
 """
 # template for the changelog body
 # https://keats.github.io/tera/docs/#introduction
@@ -23,6 +24,7 @@ body = """
         {{ commit.message | upper_first }} - \
         ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}))\
 {% endmacro -%}
+
 
 {% if version %}\
     {% if previous.version %}\

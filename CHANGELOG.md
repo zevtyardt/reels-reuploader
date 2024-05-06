@@ -1,4 +1,5 @@
 # Changelog
+
 ## [unreleased]
 
 ### ⛰️  Features
@@ -21,6 +22,7 @@
 
 ### ⚙️ Miscellaneous Tasks
 
+- *(changelog)* Update CHANGELOG.md - ([8a0fdae](https://github.com/zevtyardt/reels-reuploader/commit/8a0fdae01b02a144dec80295a41f0329fa985b8d))
 - *(changelog)* Update CHANGELOG.md - ([e7dda2e](https://github.com/zevtyardt/reels-reuploader/commit/e7dda2e464b121066a05b3d68ea916e74f8ae57a))
 - *(cliff)* Update cliff.toml - ([3c61477](https://github.com/zevtyardt/reels-reuploader/commit/3c614773a7a6f330600fd506bea635eb95705077))
 - Update version in main.rs - ([2113439](https://github.com/zevtyardt/reels-reuploader/commit/21134392ed49556e3b3819c6db4de26c963c4a69))
