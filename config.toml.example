@@ -1,0 +1,13 @@
+[cookies]
+facebook = "./cookies.json"
+instagram = ""
+
+[telegram]
+allowed_user_id = [
+  634178275
+]
+bot_token = "1234567890:AAEabcdefghijklmnopqrstuvwxyz"
+
+[ytdlp]
+download_path = "videos"
+custom_args = []

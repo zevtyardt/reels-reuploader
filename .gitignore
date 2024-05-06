@@ -1,0 +1,5 @@
+/target
+cookies.json
+config.toml
+videos/
+Cargo.lock
