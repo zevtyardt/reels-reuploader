@@ -1,5 +1,5 @@
 /target
-cookies.json
+cookies/
 config.toml
 videos/
 Cargo.lock
