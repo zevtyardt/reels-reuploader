@@ -10,8 +10,8 @@ use url::Url;
 
 use crate::{
     backend::{
-        downloader::YoutubeDlp, facebook::post_to_facebook_reels,
-        instagram::post_to_instagram_reels,
+        downloader::YoutubeDlp,
+        uploader::{facebook::post_to_facebook_reels, instagram::post_to_instagram_reels},
     },
     config::Config,
     telegram::{Data, MyDialogue, State},
@@ -49,6 +49,7 @@ pub async fn callback_handler(
             let _ = dialogue.update(State::Confirm(data)).await;
             return Ok(());
         } else if cb.data == Some("post_instagram".to_string()) {
+            data.text.push_str("Instagram\n");
             if let Err(e) = post_to_instagram_reels(&bot, config, &mut data).await {
                 data.text.push_str(format!("\n```Error\n{}```", e).as_str());
                 bot.edit_message_text(message.chat.id, message.id, data.text.clone())
@@ -57,6 +58,7 @@ pub async fn callback_handler(
                 return Ok(());
             }
         } else if cb.data == Some("post_facebook".to_string()) {
+            data.text.push_str("Facebook\n");
             if let Err(e) = post_to_facebook_reels(&bot, config, &mut data).await {
                 data.text.push_str(format!("\n```Error\n{}```", e).as_str());
                 bot.edit_message_text(message.chat.id, message.id, data.text.clone())
@@ -124,6 +126,7 @@ pub async fn download_video(bot: &Bot, data: &mut Data, config: Config) -> anyho
     .parse_mode(teloxide::types::ParseMode::MarkdownV2)
     .reply_markup(InlineKeyboardMarkup::new(button))
     .await?;
+    data.text.push_str("\n• Unggah ke: ");
 
     Ok(())
 }
