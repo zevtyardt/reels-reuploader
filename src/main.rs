@@ -31,9 +31,9 @@ fn main() -> anyhow::Result<()> {
     );
 
     paris::info!("Memuat config file");
-    let config = confy::load_path::<Config>("./config.toml")?;
-    if config.telegram.bot_token.is_empty() {
-        paris::error!("Bot token belum diatur, silahkan edit file config terlebih dahulu");
+    let config = Config::load()?;
+    if let Err(e) = config.validate() {
+        paris::error!("Error: {}", e);
         exit(0);
     }
 
